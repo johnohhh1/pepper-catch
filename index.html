@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pepper catch</title>
+<style>body{margin:0;display:grid;place-items:center;min-height:100vh;background:#f6f5f1;font-family:sans-serif}canvas{max-width:100%;border-radius:12px;background:#fff}</style>
+<p>Score <b id="sc">0</b> · Heat <b id="ht">3</b> · <button id="go">Start</button></p>
+<canvas id="c" width="680" height="380"></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),W=680,H=380;let px=W/2,items=[],score=0,heat=3,t=0,run=false,spawn=50;
+function add(){const r=Math.random();items.push({k:r<.12?'gold':r<.32?'ice':'pep',x:30+Math.random()*(W-60),y:-20,v:1.6+Math.random()*1.4+t/1800})}
+function step(){if(!run)return;t++;if(--spawn<=0){add();spawn=Math.max(14,48-t/90)}
+items.forEach(i=>{i.y+=i.v;if(i.y>H-38&&i.y<H-14&&Math.abs(i.x-px)<48){i.dead=1;if(i.k=='ice')heat--;else score+=i.k=='gold'?5:1}else if(i.y>H+20)i.dead=1});
+items=items.filter(i=>!i.dead);sc.textContent=score;ht.textContent=heat;if(heat<=0)run=false;
+x.clearRect(0,0,W,H);items.forEach(i=>{x.fillStyle=i.k=='ice'?'#85B7EB':i.k=='gold'?'#EF9F27':'#E24B4A';x.beginPath();x.arc(i.x,i.y,11,0,7);x.fill()});
+x.fillStyle='#BA7517';x.fillRect(px-44,H-34,88,24);requestAnimationFrame(step)}
+go.onclick=()=>{items=[];score=0;heat=3;t=0;run=true;step()};
+c.onmousemove=e=>{const r=c.getBoundingClientRect();px=(e.clientX-r.left)/r.width*W};
+</script>
